@@ -328,7 +328,16 @@ class getModisEE(linearBRDFBase):
     li = ee.Image(0).expression('overlap - temp + 0.5 * (1. + cosphaang) / cos1 / cos2',cdict).rename(['li'])
     isotropic = ee.Image(1.0).rename(['isotropic'])
   
-    return image.select().addBands(phaang).addBands(isotropic).addBands(ross).addBands(li).addBands(image).toFloat();
+    return image.select().addBands(isotropic).addBands(ross).addBands(li)\
+            .addBands(image.select('sur_refl_b01').float().multiply(ee.Number(1./1000.))\
+            .addBands(image.select('sur_refl_b02').float().multiply(ee.Number(1./1000.))\
+            .addBands(image.select('sur_refl_b03').float().multiply(ee.Number(1./1000.))\
+            .addBands(image.select('sur_refl_b04').float().multiply(ee.Number(1./1000.))\
+            .addBands(image.select('sur_refl_b05').float().multiply(ee.Number(1./1000.))\
+            .addBands(image.select('sur_refl_b06').float().multiply(ee.Number(1./1000.))\
+            .addBands(image.select('sur_refl_b07').float().multiply(ee.Number(1./1000.)).toFloat()
+                
+          #.addBands(image).toFloat();
 
   def getQABits(self,image, start, end, newName):
     pattern = 0;
