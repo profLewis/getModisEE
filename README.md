@@ -15,6 +15,10 @@ Also, should add a grid of geographic locations for pixels.
 
 Also, should keep track of which sample we are on to be tolerant to failure.
 
+# install
+
+           python setup.py install
+
 # Example use #1
 
 
