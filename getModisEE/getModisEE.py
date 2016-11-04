@@ -329,13 +329,13 @@ class getModisEE(linearBRDFBase):
     isotropic = ee.Image(1.0).rename(['isotropic'])
   
     return image.select().addBands(isotropic).addBands(ross).addBands(li)\
-            .addBands(image.select('sur_refl_b01').float().multiply(ee.Number(1./1000.)))\
-            .addBands(image.select('sur_refl_b02').float().multiply(ee.Number(1./1000.)))\
-            .addBands(image.select('sur_refl_b03').float().multiply(ee.Number(1./1000.)))\
-            .addBands(image.select('sur_refl_b04').float().multiply(ee.Number(1./1000.)))\
-            .addBands(image.select('sur_refl_b05').float().multiply(ee.Number(1./1000.)))\
-            .addBands(image.select('sur_refl_b06').float().multiply(ee.Number(1./1000.)))\
-            .addBands(image.select('sur_refl_b07').float().multiply(ee.Number(1./1000.))).toFloat()
+            .addBands(image.select('sur_refl_b01').float().multiply(ee.Number(1./10000.)))\
+            .addBands(image.select('sur_refl_b02').float().multiply(ee.Number(1./10000.)))\
+            .addBands(image.select('sur_refl_b03').float().multiply(ee.Number(1./10000.)))\
+            .addBands(image.select('sur_refl_b04').float().multiply(ee.Number(1./10000.)))\
+            .addBands(image.select('sur_refl_b05').float().multiply(ee.Number(1./10000.)))\
+            .addBands(image.select('sur_refl_b06').float().multiply(ee.Number(1./10000.)))\
+            .addBands(image.select('sur_refl_b07').float().multiply(ee.Number(1./10000.))).toFloat()
                 
           #.addBands(image).toFloat();
 
