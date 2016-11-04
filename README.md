@@ -35,10 +35,12 @@ or
 
 
            from getModisEE import getModisEE
-           centre = [15.42,-17.52]
+           
+           # [long,lat]
+           centre = [1.478,52.50]
            extent = [0.25,0.25]
            options = {'verbose':True,'centre':centre,'extent':extent,\
-                      'oname':'angola','scale':500,'maxn':100000}
+                      'oname':'norfolk','scale':500,'maxn':100000}
            self = getModisEE(**options)
            
            loadOptions = {'modis':['MOD09GA','MYD09GA'],\
