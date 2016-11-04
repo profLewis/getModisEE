@@ -28,7 +28,13 @@ Also, should keep track of which sample we are on to be tolerant to failure.
            options = {'verbose':True,'centre':centre,'extent':extent,\
                       'oname':'angola','scale':500,'maxn':100000}
            self = getModisEE(**options)
-           self.get()
+           
+           loadOptions = {'modis':['MOD09GA','MYD09GA'],\
+                          'dates':['2001-01-01', '2001-03-01'],\
+                          'maps':[self.maskEmptyPixels,self.maskClouds,\
+                                          self.makeVariables,self.addTime,\
+                                          self.subtractZero]}
+           self.get(**loadOptions)
            self.save()
 
 # Example use #2
