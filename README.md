@@ -37,8 +37,8 @@ or
            from getModisEE import getModisEE
            
            # [long,lat]
-           centre = [1.478,52.50]
-           extent = [0.25,0.25]
+           centre = [0.675659,52.438432]
+           extent = [1.0,1.0]
            options = {'verbose':True,'centre':centre,'extent':extent,\
                       'oname':'norfolk','scale':500,'maxn':100000}
            self = getModisEE(**options)
