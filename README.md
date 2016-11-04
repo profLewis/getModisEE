@@ -17,11 +17,12 @@ Also, should keep track of which sample we are on to be tolerant to failure.
 
 # install
 
-           pip install -e git+https://github.com/profLewis/getModisEE.git
+           pip install -e git+https://github.com/profLewis/getModisEE.git#egg=getModisEE
            
 or
 
            git clone https://github.com/profLewis/getModisEE.git
+           cd getModisEE
            python setup.py install
 
 # Example use #1
