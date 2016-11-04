@@ -8,5 +8,5 @@ setup(name='Distutils',
       author='Philip Lewis',
       author_email='p.lewis@ucl.ac.uk',
       url='https://github.com/profLewis/linearBRDF',
-      packages=[''],
+      packages=['getModisEE'],
      )
