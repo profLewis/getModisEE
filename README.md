@@ -17,6 +17,12 @@ Also, should keep track of which sample we are on to be tolerant to failure.
 
 # install
 
+First, get Google Earth Engine sorted:
+
+           see: https://developers.google.com/earth-engine/python_install
+
+Then
+
            pip install -e git+https://github.com/profLewis/getModisEE.git#egg=getModisEE
            
 or
