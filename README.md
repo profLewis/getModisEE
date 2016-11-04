@@ -17,6 +17,11 @@ Also, should keep track of which sample we are on to be tolerant to failure.
 
 # install
 
+           pip install -e git+https://git.repo/some_repo.git
+           
+or
+
+           git clone 
            python setup.py install
 
 # Example use #1
