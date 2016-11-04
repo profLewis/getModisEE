@@ -63,6 +63,8 @@ Note that if `sur_refl_b01` is all zero values (or rather, if sum is zero) then 
 
 Note also that, at present, we do not store the coordinate information. This is however accessible from the tif files.
 
+You will find a temporary dump file in the running directory called e.g. `download.3l3c3f.tmp`. This contains a data dump every e.g. 50 samples. The frequency of dump is controlled by `dumpFreq=50` in `options` or `loadOptions`.
+
 # Example use #2
 
            options = {'verbose':True,'centre':centre,'extent':extent,\
