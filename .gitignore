@@ -1,5 +1,6 @@
 odir
 *.tmp
+src
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
