@@ -205,7 +205,7 @@ class getModisEE(linearBRDFBase):
     return self.data
 
   def addTime(self,image):
-    return image.addBands(image.metadata('system:time_start').float().divide(1000 * 60 * 60 * 24 * 365.0));
+    return image.addBands(image.metadata('system:time_start').float().divide(1000 * 60 * 60 * 24));
 
   def subtractZero(self,image):
   
