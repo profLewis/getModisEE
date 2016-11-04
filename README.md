@@ -5,7 +5,7 @@ for a set geographic region (in lat/lon) and time period (default all)
 The class uses EE to pre-process the dataset by masking clouds etc
 and calculated angular BRDF kernels from the satellite angle information.
 
-It loads the dataset to an array (self.data) and also can store it in a pickle file (in odir by default)
+It loads the dataset to a dictionary of arrays (self.data) and also can store it in a pickle file (in odir by default)
 
 If the pickle files exists, you can load that with self.load()
 
@@ -14,6 +14,8 @@ It has only limited documentation at present and the functionality could be exte
 Also, should add a grid of geographic locations for pixels.
 
 Also, should keep track of which sample we are on to be tolerant to failure.
+
+This is not a super-speedy way of downloading MODIS data, but it is convenient for grabbing subsets and applying a consistent masking. It is also convenient for further processing to BRDF information.
 
 # install
 
