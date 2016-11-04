@@ -9,9 +9,11 @@ It loads the dataset to an array (self.data) and also can store it in a pickle f
 
 If the pickle files exists, you can load that with self.load()
 
-It has only limited documentation at present and the functionality could be exttended if required.
+It has only limited documentation at present and the functionality could be extended if required.
 
 Also, should add a grid of geographic locations for pixels.
+
+Also, should keep track of which sample we are on to be tolerant to failure.
 
 # Example use #1
 
