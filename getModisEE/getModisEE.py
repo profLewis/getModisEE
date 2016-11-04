@@ -44,7 +44,8 @@ class getModisEE(linearBRDFBase):
     self.extent = unload('extent',kwargs) or [-0.1,0.1]
     self.scale = unload('scale',kwargs) or 500
     self.oname = unload('oname',kwargs) or 'MODIS'
-    self.maxn  = 10000   # max number of datasets to pull
+    self.dumpFreq = unload('dumpFreq',kwargs) or 50
+    self.maxn  = unload('maxn',kwargs) or 10000   # max number of datasets to pull
 
   def setAOI(self,centre,extent):
     '''
@@ -168,9 +169,15 @@ class getModisEE(linearBRDFBase):
     '''
     self.getModisCollections(**kwargs)
     maxn = (unload('maxn',kwargs)) or self.maxn
+    dumpFreq = (unload('dumpFreq',kwargs)) or self.dumpFreq
+    dumper = 'dump_%s.tmp'%os.getpgid()
     try:
       for i in xrange(maxn):
         self.pullData(ee.ImageCollection([self.collection.toList(1,i).get(-1)]).min(),count=0)
+        if i%self.dumpFreq == 0:
+          if self.verbose:
+            print 'temp dump at count %d to'%i,dumper
+          self.save(
     except:
       pass
 
