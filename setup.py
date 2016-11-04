@@ -2,7 +2,7 @@
 
 from distutils.core import setup
 
-setup(name='Distutils',
+setup(name='getModisEE',
       version='1.0',
       description='Python MODIS access from Google Earth Engine',
       author='Philip Lewis',
