@@ -105,7 +105,9 @@ class getModisEE(linearBRDFBase):
       'region':region\
     })
 
-    if self.verbose: print(url)
+    if self.verbose: 
+      print(url)
+      print self.centre,self.extent
 
     # op
     filename = wget.download(url, bar=wget.bar_thermometer)
@@ -115,6 +117,8 @@ class getModisEE(linearBRDFBase):
     # ensure odir exists
     self.mkdir(self.odir)
 
+    # look for bad data
+    badData = False
     for name in zf.namelist():
       if self.verbose: print name
       if name.split('.')[-1] == 'tif':
@@ -123,6 +127,10 @@ class getModisEE(linearBRDFBase):
         f.write(zf.read(name))
         f.close()
         data[name] = gdal.Open(self.odir + os.sep + name).ReadAsArray()
+        if 'sur_refl' in name and data[name].sum() == 0:
+          badData = True
+          print 'no data'
+          break
       else:
         f = open(self.odir+os.sep+name,'w+')
         f.write(zf.read(name))
@@ -131,6 +139,7 @@ class getModisEE(linearBRDFBase):
 
     # clean up
     if clean: os.remove(filename)
+    if badData return None
     if not hasattr(self,'data'):
       self.data = {}
       for k in data.keys():
