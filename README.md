@@ -50,6 +50,16 @@ or
                                           self.subtractZero]}
            self.get(**loadOptions)
            self.save()
+           
+You can check what the current dataset looks like, e.g. with:
+
+           import gdal
+           f = gdal.Open('odir/norfolk_000000.sur_refl_b02.tif').ReadAsArray()
+           plt.clf()
+           plt.imshow(f,interpolation='nearest')
+           plt.colorbar()
+           
+Note that if `sur_refl_b01` is all zero values (or rather, if sum is zero) then we ignore the dataset.
 
 # Example use #2
 
