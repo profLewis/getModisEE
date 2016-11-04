@@ -139,7 +139,7 @@ class getModisEE(linearBRDFBase):
 
     # clean up
     if clean: os.remove(filename)
-    if badData return None
+    if badData: return None
     if not hasattr(self,'data'):
       self.data = {}
       for k in data.keys():
