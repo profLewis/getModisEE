@@ -157,7 +157,7 @@ class getModisEE(linearBRDFBase):
     '''
     download and load into self.data
     '''
-    self.getModisCollections()
+    self.getModisCollections(**kwargs)
     maxn = (unload('maxn',kwargs)) or self.maxn
     try:
       for i in xrange(maxn):
