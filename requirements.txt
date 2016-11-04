@@ -1,0 +1,4 @@
+ee
+wget
+zipfile
+gdal
