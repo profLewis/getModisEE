@@ -229,7 +229,6 @@ class getModisEE(linearBRDFBase):
 
     return image
 
-
   def makeVariables(self,image):
     # linear kernel models code:
     # after: https://github.com/profLewis/modisPriors/blob/master/python/kernels.py
@@ -381,42 +380,10 @@ class getModisEE(linearBRDFBase):
       .addBands(image)\
       .addBands(land.eq(1).rename(['land']))\
       .toFloat();
+    image = image.updateMask(masker)
+    #image = ee.Algorithms.If(ee.Number(image.sum().gt(0),image,ee.Image(0))
     
-    return image.updateMask(masker);
-
-
-  def doit(self):
-    verbose = False
-    odir = 'London'
-    try:
-      os.makedirs(odir)
-    except:
-      pass
-
-    collectiona = ee.ImageCollection('MOD09GA')\
-                   .filterDate('2000-01-01', '2020-03-01');
-    collectionb = ee.ImageCollection('MYD09GA')\
-                   .filterDate('2000-01-01', '2020-03-01');
-    collection =  ee.ImageCollection(collectiona.merge(collectionb));
-
-    collection = collection.map(maskEmptyPixels);
-
-    collectionCloudMasked = collection.map(maskClouds);
-
-    images = collectionCloudMasked.map(makeVariables).map(addTime)
-    images = images.map(subtractZero).sort('system:time_start')
-
-    # this is a bit hacky - cant seem to sort it else
-    count = 0
-    maxn = 10000
-    maxn = 10
-    try:
-      for i in xrange(maxn):
-        i1 = ee.ImageCollection([images.toList(1,i).get(-1)]).min()
-        getURL(i1,count)
-        count += 1
-    except:
-      pass
+    return image
 
 import sys
 import getopt
