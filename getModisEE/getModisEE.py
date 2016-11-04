@@ -170,7 +170,7 @@ class getModisEE(linearBRDFBase):
     self.getModisCollections(**kwargs)
     maxn = (unload('maxn',kwargs)) or self.maxn
     dumpFreq = (unload('dumpFreq',kwargs)) or self.dumpFreq
-    dumper = 'dump_%s.tmp'%os.getpgid()
+    dumper = 'dump_%s.tmp'%str(os.getpid())
     try:
       for i in xrange(maxn):
         self.pullData(ee.ImageCollection([self.collection.toList(1,i).get(-1)]).min(),count=0)
