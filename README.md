@@ -61,6 +61,8 @@ You can check what the current dataset looks like, e.g. with:
            
 Note that if `sur_refl_b01` is all zero values (or rather, if sum is zero) then we ignore the dataset.
 
+Note also that, at present, we do not store the coordinate information. This is however accessible from the tif files.
+
 # Example use #2
 
            options = {'verbose':True,'centre':centre,'extent':extent,\
