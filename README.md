@@ -35,14 +35,14 @@ or
 
 
            from getModisEE import getModisEE
-           centre = [-17.52,15.42]
-           extent = [0.02,0.02]
+           centre = [15.42,-17.52]
+           extent = [0.25,0.25]
            options = {'verbose':True,'centre':centre,'extent':extent,\
                       'oname':'angola','scale':500,'maxn':100000}
            self = getModisEE(**options)
            
            loadOptions = {'modis':['MOD09GA','MYD09GA'],\
-                          'dates':['2001-01-01', '2001-03-01'],\
+                          'dates':['2001-01-01', '2020-01-01'],\
                           'maps':[self.maskEmptyPixels,self.maskClouds,\
                                           self.makeVariables,self.addTime,\
                                           self.subtractZero]}
