@@ -177,7 +177,7 @@ class getModisEE(linearBRDFBase):
         if i%self.dumpFreq == 0:
           if self.verbose:
             print 'temp dump at count %d to'%i,dumper
-          self.save(
+          self.save(dumper)
     except:
       pass
 
