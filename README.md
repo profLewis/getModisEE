@@ -17,11 +17,11 @@ Also, should keep track of which sample we are on to be tolerant to failure.
 
 # install
 
-           pip install -e git+https://git.repo/some_repo.git
+           pip install -e git+https://github.com/profLewis/getModisEE.git
            
 or
 
-           git clone 
+           git clone https://github.com/profLewis/getModisEE.git
            python setup.py install
 
 # Example use #1
