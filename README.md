@@ -16,18 +16,18 @@ Also, should add a grid of geographic locations for pixels.
 # Example use #1
 
 
-from getModisEE import getModisEE
-centre = [-17.52,15.42]
-extent = [0.02,0.02]
-options = {'verbose':True,'centre':centre,'extent':extent,\
-           'oname':'angola','scale':500,'maxn':100000}
-self = getModisEE(**options)
-self.get()
-self.save()
+           from getModisEE import getModisEE
+           centre = [-17.52,15.42]
+           extent = [0.02,0.02]
+           options = {'verbose':True,'centre':centre,'extent':extent,\
+                      'oname':'angola','scale':500,'maxn':100000}
+           self = getModisEE(**options)
+           self.get()
+           self.save()
 
 # Example use #2
 
-options = {'verbose':True,'centre':centre,'extent':extent,\
-           'oname':'angola','scale':500,'maxn':100000}
-self = getModisEE(**options)
-self.load()
+           options = {'verbose':True,'centre':centre,'extent':extent,\
+                      'oname':'angola','scale':500,'maxn':100000}
+           self = getModisEE(**options)
+           self.load()
