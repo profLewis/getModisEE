@@ -67,6 +67,14 @@ Note also that, at present, we do not store the coordinate information. This is 
 
 You will find a temporary dump file in the running directory called e.g. `download.3l3c3f.tmp`. This contains a data dump every e.g. 50 samples. The frequency of dump is controlled by `dumpFreq=50` in `options` or `loadOptions`.
 
+You can also use the script [getData.py](getData.py) to access data for a particular year. If you want a more complex parser, you could build one.
+
+In practice, it seems you can run around 5 processes simultaneously, i.e. set 5 lots of [getData.py](getData.py) going with different years, at the same time. For a ${2^o \times 2^o} area, this takes around one hour per year to process and download. e.g.:
+
+           python getData.py 2001
+           
+      
+
 # Example use #2
 
            options = {'verbose':True,'centre':centre,'extent':extent,\
