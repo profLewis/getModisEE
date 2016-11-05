@@ -69,11 +69,11 @@ You will find a temporary dump file in the running directory called e.g. `downlo
 
 You can also use the script [getData.py](getData.py) to access data for a particular year. If you want a more complex parser, you could build one.
 
-In practice, it seems you can run around 5 processes simultaneously, i.e. set 5 lots of [getData.py](getData.py) going with different years, at the same time. For a $$2^o \times 2^o$$ area, this takes around one hour per year to process and download. e.g.:
+In practice, it seems you can run around 5 processes simultaneously, i.e. set 5 lots of [getData.py](getData.py) going with different years, at the same time. For a 2 degree by 2 degree area, this takes around one hour per year to process and download. e.g.:
 
            python getData.py 2001
            
-      
+ The output files would be of the order of 8GB. If they end up significantly less than this, check the dates of the downloaded data. Ocassionaly, EE can just fail on you, so some error checking would be of value.  
 
 # Example use #2
 
