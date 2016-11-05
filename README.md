@@ -73,6 +73,10 @@ In practice, it seems you can run around 5 processes simultaneously, i.e. set 5 
 
            python getData.py 2001
            
+or just:
+
+           ./getData.py 2001
+
  The output files would be of the order of 8GB. If they end up significantly less than this, check the dates of the downloaded data. Ocassionaly, EE can just fail on you, so some error checking would be of value.  
 
 # Example use #2
