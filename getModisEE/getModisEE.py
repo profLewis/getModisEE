@@ -173,6 +173,7 @@ class getModisEE(linearBRDFBase):
     dumper = 'dump_%s.tmp'%str(os.getpid())
     try:
       for i in xrange(maxn):
+        if self.verbose: print i
         self.pullData(ee.ImageCollection([self.collection.toList(1,i).get(-1)]).min(),count=0)
         if i%self.dumpFreq == 0:
           if self.verbose:
