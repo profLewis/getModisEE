@@ -65,6 +65,9 @@ class getModisEE(linearBRDFBase):
     self.maxn  = unload(self,'maxn',kwargs) or 10000   # max number of datasets to pull
     try:
       self.localParser(*args,**kwargs)
+    except:
+      pass
+
 
   def localParser(self,*args,**kwargs):
     '''
