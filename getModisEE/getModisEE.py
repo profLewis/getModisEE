@@ -217,12 +217,15 @@ class getModisEE(linearBRDFBase):
 
     # try to recover first?
     start = 0
+    import pdb;pdb.set_trace()
     if self.recover:
       try:
         self.load()
         start = self.data['count']
       except:
         start = 0
+
+    if self.verbose: print 'starting at',start
 
     try:
       for i in xrange(start,self.maxn+start):
@@ -233,6 +236,11 @@ class getModisEE(linearBRDFBase):
             print 'temp dump at count %d to'%i,dumper
           self.save(dumper)
     except:
+      if self.verbose: print 'stopping at',i
+      try:
+        self.data['count'] = i
+      except:
+        pass
       pass
 
   def load(self,*args,**kwargs):
@@ -248,6 +256,8 @@ class getModisEE(linearBRDFBase):
             (self.odir + os.sep + self.oname + '.pkl')
     output = open(ofile, 'rb') 
     self.data = pickle.load(output)
+    if not 'count' in self.data:
+      self.data['count'] = 0
     output.close()
 
   def save(self,*args,**kwargs):
