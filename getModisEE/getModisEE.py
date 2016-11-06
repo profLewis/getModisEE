@@ -96,7 +96,7 @@ class getModisEE(linearBRDFBase):
     self.topLeft     = self.centre - self.extent * 0.5
     self.bottomRight = self.centre + self.extent * 0.5 
 
-  def getModisCollections(self,*args,**kwargs):
+  def getCollections(self,*args,**kwargs):
     '''
     Specify datasets and time period
     '''
@@ -123,7 +123,8 @@ class getModisEE(linearBRDFBase):
 
     # force calculation of topLeft and bottomRight
     # 
-    if (centre) or (extent) or (not hasattr(self, 'topLeft')) or (not hasattr(self, 'bottomRight')):
+    if (centre) or (extent) or \
+       (not hasattr(self, 'topLeft')) or (not hasattr(self, 'bottomRight')):
       self.setAOI(centre,extent)
 
     # define AOI rectangle
@@ -184,6 +185,7 @@ class getModisEE(linearBRDFBase):
     if badData: return None
     if not hasattr(self,'data'):
       self.data = {}
+      self.data['count'] = count
       for k in data.keys():
         if data[k].ndim == 1:
           self.data[k] = np.atleast_2d(data[k])
@@ -191,6 +193,7 @@ class getModisEE(linearBRDFBase):
           self.data[k] = np.atleast_3d(data[k].T).T
 
     else:
+      self.data['count'] = count
       # append data from each key
       # using numpy hstack
       for k in data.keys():
@@ -208,16 +211,23 @@ class getModisEE(linearBRDFBase):
     '''
     download and load into self.data
     '''
-    self.getModisCollections(*args,**kwargs)
+    self.getCollections(*args,**kwargs)
     dumper = 'dump_%s.tmp'%str(os.getpid())
     if self.verbose: print 'dumper file',dumper
-    # how many items?
-    print ee.ImageCollection.size
+
+    # try to recover first?
+    start = 0
+    if self.recover:
+      try:
+        self.load()
+        start = self.data['count']
+      except:
+        start = 0
 
     try:
-      for i in xrange(maxn):
+      for i in xrange(start,self.maxn+start):
         if self.verbose: print i
-        self.pullData(ee.ImageCollection([self.collection.toList(1,i).get(-1)]).min(),count=0)
+        self.pullData(ee.ImageCollection([self.collection.toList(1,i).get(-1)]).min(),count=i)
         if i%self.dumpFreq == 0:
           if self.verbose:
             print 'temp dump at count %d to'%i,dumper
@@ -228,6 +238,9 @@ class getModisEE(linearBRDFBase):
   def load(self,*args,**kwargs):
     '''
     load dataset as pickle for now
+
+    TODO:
+      check we can mmap, else use other object
     '''
     import pickle
     ofile = (len(args) and type(args[0] == 'str') and args[0]) or \
@@ -259,7 +272,7 @@ class getModisEE(linearBRDFBase):
     self.counter = unload('counter',kwargs) or (hasattr(self,'counter')) \
                      or (len(args) and int(args[0])) or 0
     if not hasattr(self,'collection'):
-      self.getModisCollections()
+      self.getCollections()
     self.pullData(ee.ImageCollection([self.collection.toList(1,count).get(-1)]).min(),count=0)
     self.counter += 1
     return self.data
@@ -294,8 +307,8 @@ class getModisEE(linearBRDFBase):
 
   def makeVariables(self,image):
     # get metedata list
-    properties = image.propertyNames()
-    print properties
+    #properties = image.propertyNames()
+    #print properties
 
     # linear kernel models code:
     # after: https://github.com/profLewis/modisPriors/blob/master/python/kernels.py
