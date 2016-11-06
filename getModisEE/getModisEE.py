@@ -212,11 +212,11 @@ class getModisEE(linearBRDFBase):
     '''
     download and load into self.data
     '''
-    self.getModisCollections(**kwargs)
+    self.getModisCollections(*args,**kwargs)
     dumper = 'dump_%s.tmp'%str(os.getpid())
     if self.verbose: print 'dumper file',dumper
     # how many items?
-    ee.ImageCollection
+    print ee.ImageCollection.size
 
     try:
       for i in xrange(maxn):
