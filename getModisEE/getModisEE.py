@@ -20,8 +20,8 @@ import os
 import numpy as np
 import sys
 
-unload = lambda self,name,kwargs: ((name in kwargs and kwargs[name]) or i\
-                              (if hasattr(self,name)) and getattr(self,name))
+unload = lambda self,name,kwargs: ((name in kwargs and kwargs[name]) or \
+                              (hasattr(self,name)) and getattr(self,name))
 
 class getModisEE(linearBRDFBase):
   '''
