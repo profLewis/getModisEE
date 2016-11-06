@@ -20,7 +20,8 @@ import os
 import numpy as np
 import sys
 
-unload = lambda name,kwargs: (name in kwargs and kwargs[name])
+unload = lambda self,name,kwargs: ((name in kwargs and kwargs[name]) or i\
+                              (if hasattr(self,name)) and getattr(self,name))
 
 class getModisEE(linearBRDFBase):
   '''
@@ -37,15 +38,46 @@ class getModisEE(linearBRDFBase):
     except:
       self.err('ee.Initialize() Failed: check earth engine login',fatal=True)
 
-    self.args = args
-    self.kwargs = kwargs
+    self.parser(*args,**kwargs)
+    
+
+
+  def parser(self,*args,**kwargs):
+    '''
+    Call to interpret args and keyword args
+    '''
+    try:
+      self.args.append(args)
+    except:
+      self.args = args
+    try:
+      self.kwargs.self.kwargs(kwargs)
+    except:
+      self.kwargs = kwargs
+
     # set default area in degrees
-    self.centre = unload('centre',kwargs) or [-0.030663,51.547376]
-    self.extent = unload('extent',kwargs) or [-0.1,0.1]
-    self.scale = unload('scale',kwargs) or 500
-    self.oname = unload('oname',kwargs) or 'MODIS'
-    self.dumpFreq = unload('dumpFreq',kwargs) or 50
-    self.maxn  = unload('maxn',kwargs) or 10000   # max number of datasets to pull
+    self.centre = unload(self,'centre',kwargs) or [-0.030663,51.547376]
+    self.extent = unload(self,'extent',kwargs) or [-0.1,0.1]
+
+    self.recover = unload(self,'recover',kwargs) or False
+    self.scale = unload(self,'scale',kwargs) or 500
+    self.dumpFreq = unload(self,'dumpFreq',kwargs) or 50
+    self.maxn  = unload(self,'maxn',kwargs) or 10000   # max number of datasets to pull
+    try:
+      self.localParser(*args,**kwargs)
+
+  def localParser(self,*args,**kwargs):
+    '''
+    Application specific parsing
+    '''
+    self.sortField = iunload(self,'sortField',kwargs) or 'system:time_start'
+    self.oname = unload(self,'oname',kwargs) or 'MODIS'
+    self.maps = unload(self,'maps',kwargs) or [self.maskEmptyPixels,self.maskClouds,\
+                                          self.makeVariables,self.addTime,\
+                                          self.subtractZero]
+    self.modis = unload(self,'modis',kwargs) or ['MOD09GA','MYD09GA']
+    self.dates = unload(self,'dates',kwargs) or ['2000-01-01', '2020-03-01']
+
 
   def setAOI(self,centre,extent):
     '''
@@ -65,30 +97,39 @@ class getModisEE(linearBRDFBase):
     '''
     Specify datasets and time period
     '''
-    self.maps = unload('maps',kwargs) or [self.maskEmptyPixels,self.maskClouds,\
-                                          self.makeVariables,self.addTime,\
-                                          self.subtractZero]
-
-    self.modis = unload('modis',kwargs) or ['MOD09GA','MYD09GA']
-    self.dates = unload('dates',kwargs) or ['2000-01-01', '2020-03-01']
+    self.parser(*args,**kwargs)
     collection = ee.ImageCollection(self.modis[0]).filterDate(self.dates[0],self.dates[1])
     for i in self.modis[1:]:
       collectionb   = ee.ImageCollection(i).filterDate(self.dates[0],self.dates[1])
       collection    = ee.ImageCollection(collection.merge(collectionb))
     self.collection = collection
 
+    # get metedata list
+    properties = image.propertyNames()
+    print properties
+
     for m in self.maps:
       self.collection = self.collection.map(m)
-    self.collection = self.collection.sort('system:time_start')
+
+    try:
+      self.collection = self.collection.sort(self.sortField)
+    except:
+      self.err('Failed to apply sort field %s'%self.sortField)
 
     return self.collection
  
   def pullData(self,image,count=0,clean=True,centre=None,extent=None):
   
     count = count or (hasattr(self,'counter') and self.counter) or 0
- 
+
+    # force calculation of topLeft and bottomRight
+    # 
     if (centre) or (extent) or (not hasattr(self, 'topLeft')) or (not hasattr(self, 'bottomRight')):
       self.setAOI(centre,extent)
+
+    # define AOI rectangle
+    # and associated boundingBox and region
+    # then clip to region
 
     definedAoi  = ee.Geometry.Rectangle(self.topLeft[0],self.topLeft[1],\
                                     self.bottomRight[0],self.bottomRight[1])
@@ -109,6 +150,7 @@ class getModisEE(linearBRDFBase):
     if self.verbose: 
       print(url)
       print self.centre,self.extent
+      print region
 
     # op
     filename = wget.download(url, bar=wget.bar_thermometer)
@@ -168,9 +210,11 @@ class getModisEE(linearBRDFBase):
     download and load into self.data
     '''
     self.getModisCollections(**kwargs)
-    maxn = (unload('maxn',kwargs)) or self.maxn
-    dumpFreq = (unload('dumpFreq',kwargs)) or self.dumpFreq
     dumper = 'dump_%s.tmp'%str(os.getpid())
+    if self.verbose: print 'dumper file',dumper
+    # how many items?
+    ee.ImageCollection
+
     try:
       for i in xrange(maxn):
         if self.verbose: print i
@@ -223,6 +267,9 @@ class getModisEE(linearBRDFBase):
 
   def addTime(self,image):
     return image.addBands(image.metadata('system:time_start').float().divide(1000 * 60 * 60 * 24));
+
+  def addSensor(self,image):
+    return image.addBands();
 
   def subtractZero(self,image):
   
