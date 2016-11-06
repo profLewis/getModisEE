@@ -200,9 +200,19 @@ class getModisEE(linearBRDFBase):
         # make sure all lists
         try:
           if data[k].ndim == 2:
-            self.data[k] = np.vstack([self.data[k],np.atleast_3d(data[k].T).T])
+            # try to stack on array, if not load
+            try:
+              self.data[k] = np.vstack([self.data[k],np.atleast_3d(data[k].T).T])
+            except:
+              self.data[k] = np.atleast_3d(data[k].T).T
+
           elif data[k].ndim == 1:
-            self.data[k] = np.vstack([self.data[k],np.atleast_2d(data[k])])
+            # try to stack on array, if not load
+            try:
+              self.data[k] = np.vstack([self.data[k],np.atleast_2d(data[k])])
+            except:
+              self.data[k] = np.atleast_2d(data[k])
+
         except:
           self.data[k] = data[k] 
     return data
@@ -266,7 +276,7 @@ class getModisEE(linearBRDFBase):
     '''
     import pickle
     if not hasattr(self,'data'):
-      return
+      self.data['count'] = 0
 
     ofile = (len(args) and type(args[0] == 'str') and args[0]) or \
             (('pfile' in kwargs) and kwargs['pfile']) or \
