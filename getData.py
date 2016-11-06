@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 
 from getModisEE import getModisEE
 import sys
@@ -12,7 +11,7 @@ centre = [0.675659,52.438432]
 extent = [2.0,2.0]
 options = {'verbose':True,'centre':centre,'extent':extent,\
            'oname':'norfolk_%4d'%int(year),'scale':500,'maxn':5,\
-           'modis':['MOD09GA','MYD09GA'],'recover':True,\
+           'sensors':['MOD09GA','MYD09GA'],'recover':True,\
            'dates':['%4d-01-01'%int(year), '%4d-12-31'%int(year)]}
 
 

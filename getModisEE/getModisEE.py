@@ -78,7 +78,7 @@ class getModisEE(linearBRDFBase):
     self.maps = unload(self,'maps',kwargs) or [self.maskEmptyPixels,self.maskClouds,\
                                           self.makeVariables,self.addTime,\
                                           self.subtractZero]
-    self.modis = unload(self,'modis',kwargs) or ['MOD09GA','MYD09GA']
+    self.sensors = unload(self,'sensors',kwargs) or ['MOD09GA','MYD09GA']
     self.dates = unload(self,'dates',kwargs) or ['2000-01-01', '2020-03-01']
 
 
@@ -101,8 +101,8 @@ class getModisEE(linearBRDFBase):
     Specify datasets and time period
     '''
     self.parser(*args,**kwargs)
-    collection = ee.ImageCollection(self.modis[0]).filterDate(self.dates[0],self.dates[1])
-    for i in self.modis[1:]:
+    collection = ee.ImageCollection(self.sensors[0]).filterDate(self.dates[0],self.dates[1])
+    for i in self.sensors[1:]:
       collectionb   = ee.ImageCollection(i).filterDate(self.dates[0],self.dates[1])
       collection    = ee.ImageCollection(collection.merge(collectionb))
     self.collection = collection
@@ -141,7 +141,7 @@ class getModisEE(linearBRDFBase):
     image = image.clip(definedAoi)
 
     url = image.getDownloadURL({\
-      'name':'%s_%06d'%(self.oname,count),\
+      'name':'%s'%(self.oname),\
       'crs': 'EPSG:4326',\
       'scale': self.scale,\
       'region':region\
