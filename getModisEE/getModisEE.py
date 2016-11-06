@@ -46,6 +46,7 @@ class getModisEE(linearBRDFBase):
     '''
     Call to interpret args and keyword args
     '''
+    import pdb;pdb.set_trace()
     try:
       self.args.append(args)
     except:
@@ -73,7 +74,7 @@ class getModisEE(linearBRDFBase):
     '''
     Application specific parsing
     '''
-    self.sortField = iunload(self,'sortField',kwargs) or 'system:time_start'
+    self.sortField = unload(self,'sortField',kwargs) or 'system:time_start'
     self.oname = unload(self,'oname',kwargs) or 'MODIS'
     self.maps = unload(self,'maps',kwargs) or [self.maskEmptyPixels,self.maskClouds,\
                                           self.makeVariables,self.addTime,\
