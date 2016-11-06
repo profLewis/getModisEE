@@ -46,13 +46,12 @@ class getModisEE(linearBRDFBase):
     '''
     Call to interpret args and keyword args
     '''
-    import pdb;pdb.set_trace()
     try:
-      self.args.append(args)
+      self.args += args
     except:
       self.args = args
     try:
-      self.kwargs.self.kwargs(kwargs)
+      self.kwargs.update(kwargs)
     except:
       self.kwargs = kwargs
 
@@ -107,10 +106,6 @@ class getModisEE(linearBRDFBase):
       collectionb   = ee.ImageCollection(i).filterDate(self.dates[0],self.dates[1])
       collection    = ee.ImageCollection(collection.merge(collectionb))
     self.collection = collection
-
-    # get metedata list
-    properties = image.propertyNames()
-    print properties
 
     for m in self.maps:
       self.collection = self.collection.map(m)
@@ -298,6 +293,10 @@ class getModisEE(linearBRDFBase):
     return image
 
   def makeVariables(self,image):
+    # get metedata list
+    properties = image.propertyNames()
+    print properties
+
     # linear kernel models code:
     # after: https://github.com/profLewis/modisPriors/blob/master/python/kernels.py
     BR = 1.0;
