@@ -150,7 +150,7 @@ class getModisEE(linearBRDFBase):
     if self.verbose: 
       print(url)
       print self.centre,self.extent
-      print region
+      #print region
 
     # op
     filename = wget.download(url, bar=wget.bar_thermometer)
