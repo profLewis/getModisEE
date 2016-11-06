@@ -117,10 +117,9 @@ class getModisEE(linearBRDFBase):
 
     return self.collection
  
-  def pullData(self,image,count=0,clean=True,centre=None,extent=None):
-  
-    count = count or (hasattr(self,'counter') and self.counter) or 0
-
+  def pullData(self,image,count,clean=True,centre=None,extent=None):
+ 
+    if verbose: print '##'*8,'\n',count,'\n','##'*8 
     # force calculation of topLeft and bottomRight
     # 
     if (centre) or (extent) or \
@@ -227,7 +226,7 @@ class getModisEE(linearBRDFBase):
 
     # try to recover first?
     start = 0
-    import pdb;pdb.set_trace()
+    #import pdb;pdb.set_trace()
     if self.recover:
       try:
         self.load()
@@ -240,7 +239,7 @@ class getModisEE(linearBRDFBase):
     try:
       for i in xrange(start,self.maxn+start):
         if self.verbose: print i
-        self.pullData(ee.ImageCollection([self.collection.toList(1,i).get(-1)]).min(),count=i)
+        self.pullData(ee.ImageCollection([self.collection.toList(1,i).get(-1)]).min(),i)
         if i%self.dumpFreq == 0:
           if self.verbose:
             print 'temp dump at count %d to'%i,dumper
@@ -252,6 +251,7 @@ class getModisEE(linearBRDFBase):
       except:
         pass
       pass
+    self.data['count'] = i
 
   def load(self,*args,**kwargs):
     '''
@@ -276,6 +276,7 @@ class getModisEE(linearBRDFBase):
     '''
     import pickle
     if not hasattr(self,'data'):
+      self.data = {}
       self.data['count'] = 0
 
     ofile = (len(args) and type(args[0] == 'str') and args[0]) or \
@@ -293,7 +294,7 @@ class getModisEE(linearBRDFBase):
                      or (len(args) and int(args[0])) or 0
     if not hasattr(self,'collection'):
       self.getCollections()
-    self.pullData(ee.ImageCollection([self.collection.toList(1,count).get(-1)]).min(),count=0)
+    self.pullData(ee.ImageCollection([self.collection.toList(1,count).get(-1)]).min(),0)
     self.counter += 1
     return self.data
 
