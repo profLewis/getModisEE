@@ -79,8 +79,7 @@ class getModisEE(linearBRDFBase,mapsModisEE):
     self.sortField = unload(self,'sortField',kwargs) or 'system:time_start'
     self.oname = unload(self,'oname',kwargs) or 'MODIS'
     self.maps = unload(self,'maps',kwargs) or [self.maskEmptyPixels,self.maskClouds,\
-                                          self.makeVariables,self.addTime,\
-                                          self.subtractZero]
+                                          self.makeBRDFKernels,self.addTime]
     self.sensors = unload(self,'sensors',kwargs) or ['MOD09GA','MYD09GA']
     self.dates = unload(self,'dates',kwargs) or ['2000-01-01', '2020-03-01']
 
@@ -98,6 +97,9 @@ class getModisEE(linearBRDFBase,mapsModisEE):
     
     self.topLeft     = self.centre - self.extent * 0.5
     self.bottomRight = self.centre + self.extent * 0.5 
+
+  def addSensor(self,image):
+    return image.addBands();
 
   def getCollections(self,*args,**kwargs):
     '''

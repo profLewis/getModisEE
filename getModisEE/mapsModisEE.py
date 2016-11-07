@@ -33,32 +33,7 @@ class mapsModisEE():
   def addTime(self,image):
     return image.addBands(image.metadata('system:time_start').float().divide(1000 * 60 * 60 * 24));
 
-  def addSensor(self,image):
-    return image.addBands();
-
-  def subtractZero(self,image):
-  
-    # in degrees
-    vza_0 = 0
-    sza_0 = 0
-    vaa_0 = 0
-    saa_0 = 0
-  
-    # in degrees * 100
-    zero_angles = ee.Image([ee.Image(sza_0/0.01).rename(['SolarZenith']),\
-                                        ee.Image(saa_0/0.01).rename(['SolarAzimuth']),\
-                                        ee.Image(vza_0/0.01).rename(['SensorZenith']),\
-                                        ee.Image(vaa_0/0.01).rename(['SensorAzimuth']),\
-                                        ])
-    # get the kernels
-    kernels_0 = self.makeVariables(zero_angles)
-
-    image.addBands(image.select('ross').subtract(kernels_0.select('ross')),['ross'],True)
-    image.addBands(image.select('li').subtract(kernels_0.select('li')),['li'],True)
-
-    return image
-
-  def makeVariables(self,image):
+  def makeBRDFKernels(self,image):
     # get metedata list
     #properties = image.propertyNames()
     #print properties
@@ -69,7 +44,18 @@ class mapsModisEE():
     HB = 2.0;
     d2r = np.pi / 180.0;
     zthresh = 0.00001
-  
+    # get this from:
+
+    import pdb;pdb.set_trace()
+    import numpy as np
+    from kernels import Kernels
+    k = Kernels(np.array([0.]),np.array([0.]),np.array([0.]),RecipFlag=True,\
+           HB=2.0,BR=1.0,MODISSPARSE=True,RossType='Thick',normalise=0)
+    
+    rossOffset = k.Ross[0]
+    liOffset = k.Li[0]
+    
+ 
     # interpret view and illumination angles
     sza = image.select('SolarZenith').float().multiply(ee.Number(0.01*d2r));
     vza = image.select('SensorZenith').float().multiply(ee.Number(0.01*d2r));
@@ -131,7 +117,7 @@ class mapsModisEE():
     # ross kernel
     cdict = {'cosphaang': cosphaang,'sinphaang': sinphaang,'pi': np.pi, 'phaang':phaang,
         'cos1': cos_vza, 'cos2': cos_sza};
-    ross = ee.Image(0).expression('((pi/2. - phaang)*cosphaang+sinphaang)/(cos1+cos2)',cdict).rename(['ross']);
+    ross = ee.Image(0).expression('((pi/2. - phaang)*cosphaang+sinphaang)/(cos1+cos2) - %f'%rossOffset,cdict).rename(['ross']);
   
     # Li kernel
     cdict = {'tan1': tan1,'tan2': tan2,'cos3':cos_raa};
@@ -158,7 +144,7 @@ class mapsModisEE():
     overlap = overlap.where(w,0).rename(['overlap']);
   
     cdict = {'overlap': overlap,'cosphaang': cosphaang,'cos1':cos1,'cos2':cos2, 'temp':temp};
-    li = ee.Image(0).expression('overlap - temp + 0.5 * (1. + cosphaang) / cos1 / cos2',cdict).rename(['li'])
+    li = ee.Image(0).expression('overlap - temp + 0.5 * (1. + cosphaang) / cos1 / cos2 - %f'%liOffset,cdict).rename(['li'])
     isotropic = ee.Image(1.0).rename(['isotropic'])
   
     return image.select().addBands(isotropic).addBands(ross).addBands(li)\

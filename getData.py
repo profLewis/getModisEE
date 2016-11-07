@@ -24,9 +24,8 @@ options = {'verbose':True,'centre':centre,'extent':extent,\
 self = getModisEE(**options)
 self.maps = [self.maskEmptyPixels,\
              self.maskClouds,\
-             self.makeVariables,\
-             self.addTime,\
-             self.subtractZero]
+             self.makeBRDFKernels,\
+             self.addTime]
 
 self.get()
 self.save()

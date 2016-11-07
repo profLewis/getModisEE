@@ -65,7 +65,7 @@ class Kernels:
 	
 	
         '''
-	self.__setup(critical=critical,RecipFlag=RecipFlag,RossHS=RossHS,HB=HB,BR=BR,MODISSPARSE=MODISSPARSE,MODISDENSE=MODISDENSE,RossType=RossType,normalise=normalise,normalize=normalize,LiType=LiType,doIntegrals=doIntegrals,BSAangles=BSAangles,nbar=nbar)
+	self.__setup(critical=critical,RecipFlag=RecipFlag,RossHS=RossHS,HB=HB,BR=BR,MODISSPARSE=MODISSPARSE,MODISDENSE=MODISDENSE,RossType=RossType,normalise=normalise,normalize=normalize,LiType=LiType,doIntegrals=doIntegrals,BSAangles=BSAangles,nbar=nbar
         self.shape = vza.shape
         mask = ma.getmask(vza)
         if mask.shape != self.shape:
