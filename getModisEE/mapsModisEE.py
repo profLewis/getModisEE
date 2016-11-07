@@ -44,7 +44,6 @@ class mapsModisEE():
     zthresh = 0.00001
     # get this from:
 
-    import pdb;pdb.set_trace()
     from kernels import Kernels
     k = Kernels(np.array([0.]),np.array([0.]),np.array([0.]),RecipFlag=True,\
            HB=2.0,BR=1.0,MODISSPARSE=True,RossType='Thick',normalise=0)
