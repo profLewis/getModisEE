@@ -218,7 +218,11 @@ class mapsModisEE():
     cdict = {'overlap': overlap,'cosphaang': cosphaang,'cos1':cos1,'cos2':cos2, 'temp':temp};
     li = ee.Image(0).expression('overlap - temp + 0.5 * (1. + cosphaang) / cos1 / cos2 - %f'%liOffset,cdict).rename(['li'])
     isotropic = ee.Image(1.0).rename(['isotropic'])
-  
+
+    # add mask
+    withObs = image.select('sur_refl_b02').gt(0);
+    image = image.updateMask(withObs);
+
     return image.select().addBands(isotropic).addBands(ross).addBands(li)\
             .addBands(image.select('sur_refl_b01').float().multiply(ee.Number(1./10000.)))\
             .addBands(image.select('sur_refl_b02').float().multiply(ee.Number(1./10000.)))\
@@ -284,4 +288,46 @@ class mapsModisEE():
     return image_a 
 
 
+  def solveCoefficients(self,image):
+    '''
+    Inputs:
 
+        isotropic           : isotropic kernel
+        ross                : ross kernel
+        li                  : li kernel
+        sur_refl_b0?        : reflectance (float)
+        system:time_start   : time in days since epoch
+    '''
+    # time coefficients (cosine series)
+    ncoefs = (hasattr(self,'ncoefs') and self.ncoefs) or 10
+    if self.verbose: print ncoefs,'cosine coefficients used'
+
+    # update mask, just in case
+    withObs = image.select('sur_refl_b02').gt(0);
+    image = image.updateMask(withObs);
+
+    timer = image.select(['system:time_start'])
+
+    cosine = image.select(['system:time_start']).rename(['C000'])
+    for coeff in xrange(1,ncoefs):
+      cosine.addBands(timer.multiply(ee.Number(coeff * np.pi/365.25)).cos().rename(['C%03d'%coeff]))
+
+    result = image.select('system:time_start')
+
+    # there must be a neater way to do this, with collections
+    # but this will do
+    #
+    for coeff in xrange(ncoefs):
+      cosstr = 'C%03d'%coeff
+      costerm = cosine.select([cosstr])
+      cisotropic = image.select(['isotropic']).multiply(costerm).rename(['isotropic_%s'%cosstr])
+      cross      = image.select(['ross']).multiply(costerm).rename(['ross_%s'%cosstr])
+      cli        = image.select(['li']).multiply(costerm).rename(['li_%s'%cosstr])
+      bands = [cisotropic,cross,cli]
+
+      for band in xrange(7):
+        refstr = 'sur_refl_b0%d'%(band+1)
+        refl = image.select(refstr).multiply(costerm).rename(['%s_%s'%(refstr,cosstr)])
+        bands.append(refl)
+      result = result.addBands(bands)
+    return result

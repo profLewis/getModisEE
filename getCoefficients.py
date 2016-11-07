@@ -26,7 +26,7 @@ self.maps = [self.maskEmptyPixels,\
              self.maskClouds,\
              self.makeBRDFKernels,\
              self.addTime,
-             self.makeCoefficients]
+             self.solveCoefficients]
 
 self.get()
 self.save()

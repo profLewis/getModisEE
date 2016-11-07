@@ -13,6 +13,7 @@ except:
 
 from linearBRDFBase import linearBRDFBase
 from mapsModisEE import mapsModisEE 
+from reduceModisEE import reduceModisEE
 
 import wget
 import zipfile
@@ -25,7 +26,7 @@ import sys
 unload = lambda self,name,kwargs: ((name in kwargs and kwargs[name]) or \
                               (hasattr(self,name)) and getattr(self,name))
 
-class getModisEE(linearBRDFBase,mapsModisEE):
+class getModisEE(linearBRDFBase,mapsModisEE,reduceModisEE):
   '''
   Class to pull MODIS data from Google Earth Engine
 
