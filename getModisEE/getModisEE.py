@@ -174,7 +174,8 @@ class getModisEE(linearBRDFBase,mapsModisEE):
         f.write(zf.read(name))
         f.close()
         data[name] = gdal.Open(self.odir + os.sep + name).ReadAsArray()
-        if 'sur_refl' in name and data[name].sum() == 0:
+        if (('sur_refl' in name) or ('isotropic' in name)) \
+					and data[name].sum() == 0:
           badData = True
           print 'no data'
           break

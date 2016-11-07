@@ -256,9 +256,9 @@ class mapsModisEE():
         li_sur_refl_b0?
 
     '''
-    isotropic = image.select('isotropic'])
-    ross      = image.select('ross'])
-    li        = image.select('li'])
+    isotropic = image.select(['isotropic'])
+    ross      = image.select(['ross'])
+    li        = image.select(['li'])
 
     image_a = isotropic.multiply(isotropic).rename(['isotropic_isotropic']).addBands(\
                   isotropic.multiply(ross).rename(['isotropic_ross'])).addBands(\
@@ -269,18 +269,18 @@ class mapsModisEE():
 
     i = 1
     image_b = \
-          isotropic.multiply(image.select('sur_refl_b0%d'%i)).rename(['isotropic_sur_refl_b0%d'%i]).addBands(\  
-          ross.multiply(image.select('sur_refl_b0%d'%i)).rename(['ross_sur_refl_b0%d'%i]).addBands(\
-          li.multiply(image.select('sur_refl_b0%d'%i)).rename(['li_sur_refl_b0%d'%i])
+          isotropic.multiply(image.select('sur_refl_b0%d'%i)).rename(['isotropic_sur_refl_b0%d'%i]).addBands(\
+          ross.multiply(image.select('sur_refl_b0%d'%i)).rename(['ross_sur_refl_b0%d'%i])).addBands(\
+          li.multiply(image.select('sur_refl_b0%d'%i)).rename(['li_sur_refl_b0%d'%i]))
 
     for i in xrange(2,8):
       image_b_b = \
           isotropic.multiply(image.select('sur_refl_b0%d'%i)).rename(['isotropic_sur_refl_b0%d'%i]).addBands(\
-          ross.multiply(image.select('sur_refl_b0%d'%i)).rename(['ross_sur_refl_b0%d'%i]).addBands(\
-          li.multiply(image.select('sur_refl_b0%d'%i)).rename(['li_sur_refl_b0%d'%i])
-      image_b = image_b.cat(image_b_b)
+          ross.multiply(image.select('sur_refl_b0%d'%i)).rename(['ross_sur_refl_b0%d'%i])).addBands(\
+          li.multiply(image.select('sur_refl_b0%d'%i)).rename(['li_sur_refl_b0%d'%i]))
+      image_b = image_b.addBands(image_b_b)
 
-    image_a = image_a.cat(image_b).cat(image.select('system:time_start']))
+    image_a = image_a.addBands(image_b).addBands(image.select(['system:time_start']))
     return image_a 
 
 
