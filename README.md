@@ -19,9 +19,7 @@ This is not a super-speedy way of downloading MODIS data, but it is convenient f
 
 # install
 
-First, get Google Earth Engine sorted:
-
-           see: https://developers.google.com/earth-engine/python_install
+First, get Google Earth Engine, see: [https://developers.google.com/earth-engine/python_install](https://developers.google.com/earth-engine/python_install)
 
 Then
 
@@ -54,9 +52,8 @@ or
            self = getModisEE(**options)
            self.maps = [self.maskEmptyPixels,\
                         self.maskClouds,\
-                        self.makeVariables,\
-                        self.addTime,\
-                        self.subtractZero]
+                        self.makeBRDFKernels,\
+                        self.addTime]
 
            self.get()
            self.save()
