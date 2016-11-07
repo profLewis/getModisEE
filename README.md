@@ -37,21 +37,31 @@ or
 
 
            from getModisEE import getModisEE
-           
-           # [long,lat]
+ 
+           # [long,lat] 
            centre = [0.675659,52.438432]
-           extent = [1.0,1.0]
-           options = {'verbose':True,'centre':centre,'extent':extent,\
-                      'oname':'norfolk','scale':500,'maxn':100000}
-           self = getModisEE(**options)
+           extent = [2.0,2.0]
            
-           loadOptions = {'modis':['MOD09GA','MYD09GA'],\
-                          'dates':['2001-01-01', '2020-01-01'],\
-                          'maps':[self.maskEmptyPixels,self.maskClouds,\
-                                          self.makeVariables,self.addTime,\
-                                          self.subtractZero]}
-           self.get(**loadOptions)
+           year = 2016
+           
+           options = {'verbose':True,'centre':centre,'extent':extent,\
+                      'oname':'norfolk_%4d'%int(year),'scale':500,'maxn':2000,\
+                      'sensors':['MOD09GA','MYD09GA'],'recover':True,\
+                      'dates':['%4d-01-01'%int(year), '%4d-12-31'%int(year)]}
+
+
+
+           self = getModisEE(**options)
+           self.maps = [self.maskEmptyPixels,\
+                        self.maskClouds,\
+                        self.makeVariables,\
+                        self.addTime,\
+                        self.subtractZero]
+
+           self.get()
            self.save()
+           
+Note that we have the 'recover' flag set True, which means that the process will attempt to recover from a previous attempt at downloading the data.
            
 You can check what the current dataset looks like, e.g. with:
 
@@ -65,7 +75,7 @@ Note that if `sur_refl_b01` is all zero values (or rather, if sum is zero) then 
 
 Note also that, at present, we do not store the coordinate information. This is however accessible from the tif files.
 
-You will find a temporary dump file in the running directory called e.g. `download.3l3c3f.tmp`. This contains a data dump every e.g. 50 samples. The frequency of dump is controlled by `dumpFreq=50` in `options` or `loadOptions`.
+You will find a temporary dump file in the running directory called e.g. `download.3l3c3f.tmp`. This contains a data dump every e.g. 50 samples. The frequency of dump is controlled by `dumpFreq=50` in `options`. In case of a bad recovery, you can replace the output data file by the dump file.
 
 You can also use the script [getData.py](getData.py) to access data for a particular year. If you want a more complex parser, you could build one.
 
