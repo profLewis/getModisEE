@@ -34,9 +34,7 @@ class mapsModisEE():
     return image.addBands(image.metadata('system:time_start').float().divide(1000 * 60 * 60 * 24));
 
   def makeBRDFKernels(self,image):
-    # get metedata list
-    #properties = image.propertyNames()
-    #print properties
+    import numpy as np
 
     # linear kernel models code:
     # after: https://github.com/profLewis/modisPriors/blob/master/python/kernels.py
@@ -47,7 +45,6 @@ class mapsModisEE():
     # get this from:
 
     import pdb;pdb.set_trace()
-    import numpy as np
     from kernels import Kernels
     k = Kernels(np.array([0.]),np.array([0.]),np.array([0.]),RecipFlag=True,\
            HB=2.0,BR=1.0,MODISSPARSE=True,RossType='Thick',normalise=0)
