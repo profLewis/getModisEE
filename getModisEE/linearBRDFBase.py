@@ -45,6 +45,11 @@ class linearBRDFBase():
      To exit: use 'exit', 'quit', or Ctrl-D.
 
      '''
+     import sys
+     try:
+       print sys.exc_info()[0]
+     except:
+       pass
      for i in args:
        print i
      if 'fatal' in kwargs and kwargs['fatal']:

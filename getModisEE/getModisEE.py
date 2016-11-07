@@ -119,7 +119,7 @@ class getModisEE(linearBRDFBase):
  
   def pullData(self,image,count,clean=True,centre=None,extent=None):
  
-    if verbose: print '##'*8,'\n',count,'\n','##'*8 
+    if self.verbose: print '##'*8,'\n',count,'\n','##'*8 
     # force calculation of topLeft and bottomRight
     # 
     if (centre) or (extent) or \
@@ -162,7 +162,7 @@ class getModisEE(linearBRDFBase):
     # look for bad data
     badData = False
     for name in zf.namelist():
-      if self.verbose: print name
+      if self.verbose: print name,
       if name.split('.')[-1] == 'tif':
         # its a tif file
         f = open(self.odir + os.sep + name,'w+b')
@@ -226,7 +226,6 @@ class getModisEE(linearBRDFBase):
 
     # try to recover first?
     start = 0
-    #import pdb;pdb.set_trace()
     if self.recover:
       try:
         self.load()
@@ -240,10 +239,13 @@ class getModisEE(linearBRDFBase):
       for i in xrange(start,self.maxn+start):
         if self.verbose: print i
         self.pullData(ee.ImageCollection([self.collection.toList(1,i).get(-1)]).min(),i)
-        if i%self.dumpFreq == 0:
-          if self.verbose:
-            print 'temp dump at count %d to'%i,dumper
-          self.save(dumper)
+        try:
+          if i%self.dumpFreq == 0:
+            if self.verbose:
+              print 'temp dump at count %d to'%i,dumper
+            self.save(dumper)
+        except:
+          pass
     except:
       if self.verbose: print 'stopping at',i
       try:
@@ -256,7 +258,8 @@ class getModisEE(linearBRDFBase):
   def load(self,*args,**kwargs):
     '''
     load dataset as pickle for now
-
+    '''
+    '''
     TODO:
       check we can mmap, else use other object
     '''
