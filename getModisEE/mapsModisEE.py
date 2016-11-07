@@ -33,6 +33,61 @@ class mapsModisEE():
   def addTime(self,image):
     return image.addBands(image.metadata('system:time_start').float().divide(1000 * 60 * 60 * 24));
 
+  def getQABits(self,image, start, end, newName):
+    pattern = 0;
+    #for (var i = start; i <= end; i++) {
+    for i in xrange(start,end+1):
+       pattern += 2**i
+    #}
+    return image.select([0], [newName])\
+                  .bitwiseAnd(pattern)\
+                  .rightShift(start);
+
+  def maskEmptyPixels(self,image):
+    withObs = image.select('num_observations_1km').gt(0);
+    return image.updateMask(withObs);
+
+  def maskClouds(self,image):
+    getQABits = self.getQABits
+    QA = image.select('state_1km');
+    land = getQABits(QA, 3, 5, 'land/sea');
+    internalCloud = getQABits(QA, 10, 10, 'internal_cloud_algorithm_flag');
+    MOD35SnowIce = getQABits(QA, 12, 12, 'MOD35_snow_ice_flag');
+    internalSnow = getQABits(QA, 15, 15, 'internal_snow_mask');
+    cirrus_detected = getQABits(QA, 8, 9, 'cirrus_detected');
+    aerosol_quality = getQABits(QA, 6, 7, 'aerosol_quality');
+    valid = image.select("sur_refl_b01").gt(0)\
+          .And(image.select("sur_refl_b02").gt(0))\
+         .And(image.select("sur_refl_b03").gt(0))\
+         .And(image.select("sur_refl_b04").gt(0))\
+         .And(image.select("sur_refl_b05").gt(0))\
+         .And(image.select("sur_refl_b06").gt(0))\
+         .And(image.select("sur_refl_b07").gt(0))\
+         .And(image.select("sur_refl_b01").lte(1.1/0.0001))\
+         .And(image.select("sur_refl_b02").lte(1.1/0.0001))\
+         .And(image.select("sur_refl_b03").lte(1.1/0.0001))\
+         .And(image.select("sur_refl_b04").lte(1.1/0.0001))\
+         .And(image.select("sur_refl_b05").lte(1.1/0.0001))\
+         .And(image.select("sur_refl_b06").lte(1.1/0.0001))\
+         .And(image.select("sur_refl_b07").lte(1.1/0.0001));
+
+    nosnow = ((MOD35SnowIce.eq(0)).And(internalSnow.eq(0))).rename(['nosnow']);
+
+    masker = valid.And(nosnow).And(aerosol_quality.gte(1))\
+                  .And(cirrus_detected.lte(2))\
+                  .And(land.neq(7))\
+                  .And(internalCloud.eq(0));
+    snow = ((MOD35SnowIce.eq(1)).Or(internalSnow.eq(1)))
+    snow = snow.rename(['snow'])
+    image = image.select()\
+      .addBands(image)\
+      .addBands(land.eq(1).rename(['land']))\
+      .toFloat();
+    image = image.updateMask(masker)
+    #image = ee.Algorithms.If(ee.Number(image.sum().gt(0),image,ee.Image(0))
+
+    return image
+
   def makeBRDFKernels(self,image):
     '''
     Inputs: 
@@ -41,6 +96,7 @@ class mapsModisEE():
 	SensorZenith
 	SensorAzimuth
 	SolarAzimuth
+	sur_refl_b0?
 
 	as int. Angle in degrees = 0.01 * angle
      
@@ -63,6 +119,8 @@ class mapsModisEE():
     # get this from:
 
     from kernels import Kernels
+    # would be neater to make use of this throughout ...
+
     k = Kernels(np.array([0.]),np.array([0.]),np.array([0.]),RecipFlag=True,\
            HB=2.0,BR=1.0,MODISSPARSE=True,RossType='Thick',normalise=0)
     
@@ -172,58 +230,58 @@ class mapsModisEE():
                 
           #.addBands(image).toFloat();
 
-  def getQABits(self,image, start, end, newName):
-    pattern = 0;
-    #for (var i = start; i <= end; i++) {
-    for i in xrange(start,end+1):
-       pattern += 2**i 
-    #}
-    return image.select([0], [newName])\
-                  .bitwiseAnd(pattern)\
-                  .rightShift(start);
+  def makeCoefficients(self,image):
+    '''
+    Inputs:
 
-  def maskEmptyPixels(self,image):
-    withObs = image.select('num_observations_1km').gt(0);
-    return image.updateMask(withObs);
+        isotropic           : isotropic kernel
+        ross                : ross kernel
+        li                  : li kernel
+        sur_refl_b0?        : reflectance (float)
+        system:time_start   : time in days since epoch
 
-  def maskClouds(self,image):
-    getQABits = self.getQABits
-    QA = image.select('state_1km');
-    land = getQABits(QA, 3, 5, 'land/sea');
-    internalCloud = getQABits(QA, 10, 10, 'internal_cloud_algorithm_flag');
-    MOD35SnowIce = getQABits(QA, 12, 12, 'MOD35_snow_ice_flag');
-    internalSnow = getQABits(QA, 15, 15, 'internal_snow_mask');
-    cirrus_detected = getQABits(QA, 8, 9, 'cirrus_detected');
-    aerosol_quality = getQABits(QA, 6, 7, 'aerosol_quality');
-    valid = image.select("sur_refl_b01").gt(0)\
-          .And(image.select("sur_refl_b02").gt(0))\
-         .And(image.select("sur_refl_b03").gt(0))\
-         .And(image.select("sur_refl_b04").gt(0))\
-         .And(image.select("sur_refl_b05").gt(0))\
-         .And(image.select("sur_refl_b06").gt(0))\
-         .And(image.select("sur_refl_b07").gt(0))\
-         .And(image.select("sur_refl_b01").lte(1.1/0.0001))\
-         .And(image.select("sur_refl_b02").lte(1.1/0.0001))\
-         .And(image.select("sur_refl_b03").lte(1.1/0.0001))\
-         .And(image.select("sur_refl_b04").lte(1.1/0.0001))\
-         .And(image.select("sur_refl_b05").lte(1.1/0.0001))\
-         .And(image.select("sur_refl_b06").lte(1.1/0.0001))\
-         .And(image.select("sur_refl_b07").lte(1.1/0.0001));
+    Outputs:
 
-    nosnow = ((MOD35SnowIce.eq(0)).And(internalSnow.eq(0))).rename(['nosnow']);
+	# A terms
+        isotropic_isotropic
+        isotropic_ross
+        isotropic_li
+        ross_ross
+        ross_li
+        li_li
 
-    masker = valid.And(nosnow).And(aerosol_quality.gte(1))\
-                  .And(cirrus_detected.lte(2))\
-                  .And(land.neq(7))\
-                  .And(internalCloud.eq(0));
-    snow = ((MOD35SnowIce.eq(1)).Or(internalSnow.eq(1)))
-    snow = snow.rename(['snow'])
-    image = image.select()\
-      .addBands(image)\
-      .addBands(land.eq(1).rename(['land']))\
-      .toFloat();
-    image = image.updateMask(masker)
-    #image = ee.Algorithms.If(ee.Number(image.sum().gt(0),image,ee.Image(0))
-    
-    return image
+        # b terms
+        isotropic_sur_refl_b0?
+        ross_sur_refl_b0?
+        li_sur_refl_b0?
+
+    '''
+    isotropic = image.select('isotropic'])
+    ross      = image.select('ross'])
+    li        = image.select('li'])
+
+    image_a = isotropic.multiply(isotropic).rename(['isotropic_isotropic']).addBands(\
+                  isotropic.multiply(ross).rename(['isotropic_ross'])).addBands(\
+                  isotropic.multiply(li).rename(['isotropic_li'])).addBands(\
+                  ross.multiply(ross).rename(['ross_ross'])).addBands(\
+                  ross.multiply(li).rename(['ross_li'])).addBands(\
+                  li.multiply(li).rename(['li_li']))
+
+    i = 1
+    image_b = \
+          isotropic.multiply(image.select('sur_refl_b0%d'%i)).rename(['isotropic_sur_refl_b0%d'%i]).addBands(\  
+          ross.multiply(image.select('sur_refl_b0%d'%i)).rename(['ross_sur_refl_b0%d'%i]).addBands(\
+          li.multiply(image.select('sur_refl_b0%d'%i)).rename(['li_sur_refl_b0%d'%i])
+
+    for i in xrange(2,8):
+      image_b_b = \
+          isotropic.multiply(image.select('sur_refl_b0%d'%i)).rename(['isotropic_sur_refl_b0%d'%i]).addBands(\
+          ross.multiply(image.select('sur_refl_b0%d'%i)).rename(['ross_sur_refl_b0%d'%i]).addBands(\
+          li.multiply(image.select('sur_refl_b0%d'%i)).rename(['li_sur_refl_b0%d'%i])
+      image_b = image_b.cat(image_b_b)
+
+    image_a = image_a.cat(image_b).cat(image.select('system:time_start']))
+    return image_a 
+
+
 
