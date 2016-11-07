@@ -229,7 +229,7 @@ class getModisEE(linearBRDFBase):
     if self.recover:
       try:
         self.load()
-        start = self.data['count']
+        start = self.data['count'] + 1
       except:
         start = 0
 
