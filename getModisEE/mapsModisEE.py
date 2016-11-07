@@ -34,6 +34,24 @@ class mapsModisEE():
     return image.addBands(image.metadata('system:time_start').float().divide(1000 * 60 * 60 * 24));
 
   def makeBRDFKernels(self,image):
+    '''
+    Inputs: 
+
+	SolarZenith
+	SensorZenith
+	SensorAzimuth
+	SolarAzimuth
+
+	as int. Angle in degrees = 0.01 * angle
+     
+    Outputs:
+	Isotropic
+	Ross
+	Li
+	sur_refl_b0?
+ 
+    '''
+
     import numpy as np
 
     # linear kernel models code:
