@@ -122,8 +122,30 @@ class getModisEE(linearBRDFBase,mapsModisEE,reduceModisEE):
       self.err('Failed to apply sort field %s'%self.sortField)
 
     return self.collection
+
+  def pullData(self,image,count,clean=True,centre=None,extent=None,show=True,pull=False):
  
-  def pullData(self,image,count,clean=True,centre=None,extent=None):
+    if self.verbose: print '##'*8,'\n',count,'\n','##'*8 
+    # force calculation of topLeft and bottomRight
+    # 
+    if (centre) or (extent) or \
+       (not hasattr(self, 'topLeft')) or (not hasattr(self, 'bottomRight')):
+      self.setAOI(centre,extent)
+    definedAoi  = ee.Geometry.Rectangle(self.topLeft[0],self.topLeft[1],\
+                                    self.bottomRight[0],self.bottomRight[1])
+
+    boundingBox = definedAoi.bounds(1)
+    region = ee.Geometry(boundingBox.getInfo())\
+                        .toGeoJSONString()
+
+    image = image.clip(definedAoi)
+    if show:
+      print 1
+    if pull:
+      self.pullData2(image,count,clean=clean,centre=centre,extent=extent)
+
+ 
+  def pullData2(self,image,count,clean=True,centre=None,extent=None):
  
     if self.verbose: print '##'*8,'\n',count,'\n','##'*8 
     # force calculation of topLeft and bottomRight
