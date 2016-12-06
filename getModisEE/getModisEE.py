@@ -14,6 +14,9 @@ except:
 from linearBRDFBase import linearBRDFBase
 from mapsModisEE import mapsModisEE 
 from reduceModisEE import reduceModisEE
+import mapclient_qt
+import miscUtilities
+
 
 import wget
 import zipfile
@@ -140,7 +143,8 @@ class getModisEE(linearBRDFBase,mapsModisEE,reduceModisEE):
 
     image = image.clip(definedAoi)
     if show:
-      print 1
+      mapclient_qt.centerMap(centre[0],centre[1])
+      mapclient_qt.addToMap(image,'Image %d'%count)
     if pull:
       self.pullData2(image,count,clean=clean,centre=centre,extent=extent)
 
@@ -267,7 +271,7 @@ class getModisEE(linearBRDFBase,mapsModisEE,reduceModisEE):
     try:
       for i in xrange(start,self.maxn+start):
         if self.verbose: print i
-        self.pullData(ee.ImageCollection([self.collection.toList(1,i).get(-1)]).min(),i)
+        self.pullData(ee.ImageCollection([self.collection.toList(1,i).get(-1)]).min(),i,show=True)
         try:
           if i%self.dumpFreq == 0:
             if self.verbose:
@@ -357,8 +361,11 @@ def main():
   except:
     self.maxn = 10; 
     self.get()
-    self.save()
+    #self.save()
 
 if __name__ == "__main__":
   # execute only if run as a script
-  main()
+  t = threading.Thread(target=main)
+  t.start()
+
+  EE.mapclient_qt.run()
